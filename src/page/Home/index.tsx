@@ -9,10 +9,12 @@ import OverviewCard from "./OverviewCard/OverviewCard";
 import ChartsSection from "./ChartSection/ChartSection";
 import EVTable from "./EVTablle/EVTable";
 import Loader from "@/components/Loader/Loader";
+import ErrorComponent from "@/components/ErrorComponent/ErrorComponent";
 
 function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<IEVData[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const overviewData: IOverviewData[] = useMemo(() => {
     const totalVehicle = data.length;
@@ -59,25 +61,41 @@ function Home() {
   }, [data]);
 
   useEffect(() => {
-    Papa.parse("/Electric_Vehicle_Population_Data.csv", {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      transformHeader: (header) => {
-        return headerMap[header] || header.replace(/\s+/g, "").toLowerCase();
-      },
-      complete: (result) => {
-        const parsed: IEVData[] = result.data as IEVData[];
-        setData(parsed);
+    const fetchData = async () => {
+      try {
+        Papa.parse("/Electric_Vehicle_Population_Data.csv", {
+          download: true,
+          header: true,
+          skipEmptyLines: true,
+          transformHeader: (header) =>
+            headerMap[header] || header.replace(/\s+/g, "").toLowerCase(),
+          complete: (result) => {
+            const parsed: IEVData[] = result.data as IEVData[];
+            setData(parsed);
+            setIsLoading(false);
+          },
+          error: (err) => {
+            console.error("Error parsing CSV:", err);
+            setError("Failed to parse CSV data.");
+            setIsLoading(false);
+          },
+        });
+      } catch (err) {
+        console.error("Error fetching CSV:", err);
+        setError("Failed to fetch CSV data.");
         setIsLoading(false);
-      },
-    });
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
     <Layout>
       {isLoading ? (
         <Loader />
+      ) : error ? (
+        <ErrorComponent errMessage={error} />
       ) : (
         <div className="animate-fade">
           <OverviewCard data={overviewData} />
