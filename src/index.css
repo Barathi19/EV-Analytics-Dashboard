@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-secondary: #16a34a;
+  --color-accent: #f59e0b;
+  --color-background: #f2f3f3;
+  --color-card: #ffffff;
+  --color-text: #111827;
+}
+
+/* FADE ANIMATION */
+.animate-fade {
+  animation: fade 0.5s ease-in-out;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* LOADER */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  --_c: no-repeat radial-gradient(farthest-side, #2563eb 92%, #0000);
+  --_b: no-repeat radial-gradient(farthest-side, #16a34a 92%, #0000);
+  background: var(--_c) top, var(--_b) left, var(--_b) right, var(--_c) bottom;
+  background-size: 12px 12px;
+  animation: l7 1s infinite;
+}
+@keyframes l7 {
+  to {
+    transform: rotate(0.5turn);
+  }
+}
